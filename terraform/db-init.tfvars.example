@@ -1,0 +1,5 @@
+# Temporary configuration for database initialization
+# Set these values, run terraform apply, initialize DB, then set to false and apply again
+
+enable_db_bastion_access = true
+bastion_ip_cidr          = "YOUR_IP_HERE/32"  # Get from: curl https://checkip.amazonaws.com

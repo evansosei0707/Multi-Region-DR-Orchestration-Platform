@@ -1,0 +1,25 @@
+# Temporary Bastion Host Configuration
+# Add this to your main.tf to create a bastion host for database initialization
+
+module "bastion" {
+  source = "./modules/bastion"
+
+  providers = {
+    aws = aws.primary
+  }
+
+  project_name          = var.project_name
+  region_name           = "primary"
+  vpc_id                = module.networking_primary.vpc_id
+  public_subnet_id      = module.networking_primary.public_subnet_ids[0]
+  rds_security_group_id = module.networking_primary.rds_security_group_id
+  your_ip_cidr          = var.bastion_ip_cidr
+}
+
+output "bastion_ip" {
+  value = module.bastion.bastion_public_ip
+}
+
+output "bastion_logs" {
+  value = "ssh -i your-key.pem ec2-user@${module.bastion.bastion_public_ip} 'cat /var/log/db-init.log'"
+}

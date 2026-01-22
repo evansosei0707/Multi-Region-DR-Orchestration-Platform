@@ -1,0 +1,34 @@
+# Example terraform.tfvars
+# Copy this file to terraform.tfvars and update values as needed
+
+project_name = "dr-platform"
+environment  = "prod"
+domain_name  = "my-projects-aws.site"
+
+# Network CIDRs
+control_plane_vpc_cidr = "10.0.0.0/16"
+primary_vpc_cidr       = "10.1.0.0/16"
+dr_vpc_cidr            = "10.2.0.0/16"
+
+# Database
+db_instance_class    = "db.t3.micro"
+db_engine_version    = "14.20"
+db_allocated_storage = 20
+db_name              = "ecommerce"
+
+# ECS Task Sizes
+ecs_frontend_cpu    = 256
+ecs_frontend_memory = 512
+ecs_backend_cpu     = 256
+ecs_backend_memory  = 512
+
+# Auto-scaling
+primary_min_tasks = 2
+primary_max_tasks = 10
+dr_min_tasks      = 1
+dr_max_tasks      = 10
+
+# DR Objectives
+rto_target_minutes              = 5
+rpo_target_seconds              = 30
+replication_lag_alarm_threshold = 30
