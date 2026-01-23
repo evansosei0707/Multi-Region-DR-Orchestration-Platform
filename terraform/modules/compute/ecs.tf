@@ -109,6 +109,23 @@ resource "aws_iam_role" "ecs_task" {
   }
 }
 
+# Secrets Manager access for task role (backend needs to read DB credentials)
+resource "aws_iam_role_policy" "ecs_task_secrets" {
+  name = "${var.project_name}-${var.region_name}-ecs-task-secrets"
+  role = aws_iam_role.ecs_task.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "secretsmanager:GetSecretValue"
+      ]
+      Resource = var.db_secret_arn
+    }]
+  })
+}
+
 # S3 access for application
 resource "aws_iam_role_policy" "ecs_task_s3" {
   name = "${var.project_name}-${var.region_name}-ecs-s3"
@@ -226,13 +243,12 @@ resource "aws_ecs_task_definition" "backend" {
       {
         name  = "S3_BUCKET"
         value = var.s3_bucket_name
+      },
+      {
+        name  = "DB_SECRET"
+        value = var.db_secret_arn
       }
     ]
-
-    secrets = [{
-      name      = "DB_SECRET"
-      valueFrom = var.db_secret_arn
-    }]
 
     logConfiguration = {
       logDriver = "awslogs"

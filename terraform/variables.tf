@@ -169,3 +169,13 @@ variable "additional_tags" {
   type        = map(string)
   default     = {}
 }
+
+# -----------------------------------------------------------------------------
+# Notification Configuration
+# -----------------------------------------------------------------------------
+
+variable "notification_email" {
+  description = "Email address for DR notifications"
+  type        = string
+  default     = ""
+}

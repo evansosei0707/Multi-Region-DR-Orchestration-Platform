@@ -78,7 +78,27 @@ output "failover_state_machine_arn" {
   value       = module.control_plane.failover_state_machine_arn
 }
 
+output "failback_state_machine_arn" {
+  description = "Failback Step Function ARN"
+  value       = module.control_plane.failback_state_machine_arn
+}
+
 output "dr_state_table" {
   description = "DynamoDB table for DR state"
   value       = module.control_plane.dr_state_table_name
+}
+
+output "health_checker_function" {
+  description = "Health checker Lambda function name"
+  value       = module.control_plane.health_checker_function_name
+}
+
+output "sns_alerts_topic" {
+  description = "SNS topic ARN for DR alerts"
+  value       = module.control_plane.sns_topic_arn
+}
+
+output "active_region_parameter" {
+  description = "SSM parameter for active region"
+  value       = module.control_plane.active_region_parameter
 }

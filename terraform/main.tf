@@ -175,6 +175,29 @@ module "storage" {
 }
 
 # -----------------------------------------------------------------------------
+# ECR Cross-Region Replication
+# Replicates container images from primary (us-east-1) to DR (us-west-2)
+# -----------------------------------------------------------------------------
+
+resource "aws_ecr_replication_configuration" "cross_region" {
+  provider = aws.primary
+
+  replication_configuration {
+    rule {
+      destination {
+        region      = "us-west-2"
+        registry_id = data.aws_caller_identity.current.account_id
+      }
+
+      repository_filter {
+        filter      = "dr-platform"
+        filter_type = "PREFIX_MATCH"
+      }
+    }
+  }
+}
+
+# -----------------------------------------------------------------------------
 # Compute - Primary Region (us-east-1)
 # -----------------------------------------------------------------------------
 
@@ -310,29 +333,33 @@ module "control_plane" {
   domain_name        = var.domain_name
   
   # Primary region resources
-  primary_ecs_cluster_name = module.compute_primary.ecs_cluster_name
+  primary_region               = "us-east-1"
+  primary_ecs_cluster_name     = module.compute_primary.ecs_cluster_name
   primary_ecs_frontend_service = module.compute_primary.frontend_service_name
-  primary_ecs_backend_service = module.compute_primary.backend_service_name
-  primary_alb_arn      = module.compute_primary.alb_arn
-  primary_alb_dns      = module.compute_primary.alb_dns_name
+  primary_ecs_backend_service  = module.compute_primary.backend_service_name
+  primary_alb_arn              = module.compute_primary.alb_arn
+  primary_alb_dns              = module.compute_primary.alb_dns_name
+  primary_alb_zone_id          = "Z35SXDOTRQ7X7K"  # us-east-1 ALB hosted zone
   
   # DR region resources
-  dr_ecs_cluster_name  = module.compute_dr.ecs_cluster_name
-  dr_ecs_frontend_service = module.compute_dr.frontend_service_name
-  dr_ecs_backend_service = module.compute_dr.backend_service_name
-  dr_alb_arn           = module.compute_dr.alb_arn
-  dr_alb_dns           = module.compute_dr.alb_dns_name
+  dr_region                = "us-west-2"
+  dr_ecs_cluster_name      = module.compute_dr.ecs_cluster_name
+  dr_ecs_frontend_service  = module.compute_dr.frontend_service_name
+  dr_ecs_backend_service   = module.compute_dr.backend_service_name
+  dr_alb_arn               = module.compute_dr.alb_arn
+  dr_alb_dns               = module.compute_dr.alb_dns_name
+  dr_alb_zone_id           = "Z1H1FL5HABSF5"  # us-west-2 ALB hosted zone
   
   # Database
   primary_db_identifier = module.database_primary.db_instance_id
-  dr_db_identifier     = module.database_dr.db_instance_id
+  dr_db_identifier      = module.database_dr.db_instance_id
   
   # DR Configuration
   rto_target_minutes   = var.rto_target_minutes
   rpo_target_seconds   = var.rpo_target_seconds
   
-  # Monitoring
-  sns_topic_arn        = module.monitoring_control_plane.sns_topic_arn
+  # Notifications
+  notification_email   = var.notification_email
 
   depends_on = [module.compute_primary, module.compute_dr]
 }
