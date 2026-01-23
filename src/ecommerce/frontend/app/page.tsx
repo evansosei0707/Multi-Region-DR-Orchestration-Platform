@@ -73,7 +73,10 @@ export default function Home() {
                     <div className="flex justify-between items-center">
                         <div>
                             <h1 className="text-3xl font-bold text-indigo-600">DR E-commerce</h1>
-                            <p className="text-sm text-gray-500">Serving from: {region || 'unknown'}</p>
+                            <p className="text-sm text-gray-500">
+                                Serving from: {region || 'unknown'}
+                                <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded">v1.1</span>
+                            </p>
                         </div>
                         {getCartCount() > 0 && (
                             <Link href="/checkout" className="relative">
