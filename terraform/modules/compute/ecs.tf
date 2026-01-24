@@ -355,6 +355,23 @@ resource "aws_lb_listener" "http" {
   }
 }
 
+# Listener Rule - Backend Health Check
+resource "aws_lb_listener_rule" "backend_health" {
+  listener_arn = aws_lb_listener.http.arn
+  priority     = 50
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.backend.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/health"]
+    }
+  }
+}
+
 # Listener Rule - Backend API
 resource "aws_lb_listener_rule" "backend_api" {
   listener_arn = aws_lb_listener.http.arn
