@@ -11,8 +11,12 @@ IMAGE_NAME="dr-platform-backend"
 
 echo "=== Rebuilding backend image with curl support ==="
 
-# Navigate to backend directory
-cd ~/Multi-Region-Disaster-Recovery-Orchestration-Platform/src/ecommerce/backend
+# Get the script directory and navigate to backend
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+echo "Navigating to backend directory..."
+cd "${PROJECT_ROOT}/src/ecommerce/backend"
 
 # Build the image
 echo "Building Docker image..."
